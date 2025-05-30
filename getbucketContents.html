@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S3 Bucket Viewer</title>
+  <link rel="stylesheet" href="getbucketStyles.css">
+
+  <script>
+    // Function to fetch the contents of the S3 bucket
+    async function fetchBucketContents() {
+      try {
+        // Replace with your Lambda Function URL
+        const functionUrl = 'https://x6ty2cd4u4pyis57ylyqlgmeo40rcshd.lambda-url.us-east-1.on.aws/';
+
+        // Fetch the bucket contents from the Lambda function
+        const response = await fetch(functionUrl);
+        if (!response.ok) {
+          throw new Error('Failed to fetch data from the server');
+        }
+
+        const data = await response.json();
+
+        // Display the objects on the page
+        const container = document.getElementById('bucketContents');
+        container.innerHTML = ''; // Clear any existing content
+
+        if (data.objects.length > 0) {
+      data.objects.forEach(item => {
+        const listItem = document.createElement('li');
+
+        // Add file name
+        const nameDiv = document.createElement('div');
+        nameDiv.textContent = `File Name: ${item.Key}`;
+
+        // Add last modified date
+        const dateDiv = document.createElement('div');
+        dateDiv.textContent = `Last Modified: ${item.LastModified}`;
+
+        // Add file size (convert bytes to KB)
+        const sizeDiv = document.createElement('div');
+        sizeDiv.textContent = `Size: ${(item.Size / 1024).toFixed(2)} KB`;
+
+        // Add clickable link
+        const link = document.createElement('a');
+        link.textContent = 'Download';
+        link.href = `https://bayanet.s3.us-east-1.amazonaws.com/${item.Key}`; // Replace with your bucket URL
+        link.target = '_blank';
+
+        listItem.appendChild(nameDiv);
+        listItem.appendChild(dateDiv);
+        listItem.appendChild(sizeDiv);
+        listItem.appendChild(link);
+        container.appendChild(listItem);
+          });
+        } else {
+          container.textContent = 'No objects found in the bucket.';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        const container = document.getElementById('bucketContents');
+        container.textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Function to filter objects by name
+    function filterObjects() {
+      const filterInput = document.getElementById('filterInput').value.toLowerCase();
+      const items = document.querySelectorAll('#bucketContents li');
+
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(filterInput)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // Fetch data when the page loads
+    window.onload = fetchBucketContents;
+  </script>
+</head>
+<body>
+  <!-- Page heading -->
+  <h1>Your bayanet Contents</h1>
+  <a href="index.html"><h3>Upload Files to S3</h3></a>
+
+  <!-- Search/filter input for filtering objects by name -->
+  <input 
+    type="text" 
+    id="filterInput" 
+    placeholder="Filter objects by name..." 
+    onkeyup="filterObjects()">
+
+  <!-- Container to display the list of objects -->
+  <ul id="bucketContents">Loading...</ul>
+</body>
+</html>

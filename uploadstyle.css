@@ -1,0 +1,119 @@
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #ffffff20;
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    input[type="file"] {
+      background: #ffffff;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    input[type="file"]:hover {
+      border-color: #2575fc;
+    }
+    button {
+      background: #2575fc;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #1b59b8;
+    }
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+    .message.success {
+      color: #9ceaae;
+    }
+    .message.error {
+      color: #dc3545;
+    }
+    a:link {
+  color: green;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:visited {
+  color: pink;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  color: red;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+a:active {
+  color: yellow;
+  background-color: transparent;
+  text-decoration: underline;
+}
+.custom-file-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+.progress-container {
+  width: 100%;
+  background: #ffffff50;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  height: 8px;
+  width: 0%;
+  background: #9ceaae;
+  transition: width 0.4s ease-in-out;
+}

@@ -1,0 +1,38 @@
+// S3 BUCKET CROSS ORIGIN ACCESS POLICY
+
+[
+    {
+        "AllowedOrigins": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "GET",
+            "PUT",
+            "POST"
+        ],
+        "MaxAgeSeconds": 3000,
+        "ExposeHeaders": [
+             "Content-Range",
+             "Content-Length",
+             "ETag"
+        ],
+        "AllowedHeaders": [
+            "Authorization",
+            "Content-Range",
+            "Accept",
+            "Content-Type",
+            "Origin",
+            "Range"
+        ]
+    }
+]
+
+
+// INTEGRATION REQUEST MAPPING TEMPLATE
+
+// application/json
+
+{
+    "fileName": "$input.json('$.fileName')",
+    "fileContent": "$input.json('$.fileContent')"
+}

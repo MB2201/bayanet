@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bayanet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .icon {
+            font-size: 50px;
+            color: #4a6fa5;
+            margin-bottom: 15px;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+        button {
+            background: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #3a5a80;
+        }
+        progress {
+            width: 100%;
+            margin: 15px 0;
+        }
+        .message {
+            margin: 10px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <i class="fas fa-cloud-upload-alt icon"></i>
+        <h1>bayanet</h1>
+        <a href="getbucketContents.html"><h3>View all Files</h3></a>
+        
+        <form id="uploadForm">
+            <input type="file" id="fileInput" accept=".pdf, .docx, .xlsx, .txt, .jpg, .png" required>
+            <button type="submit"><i class="fas fa-upload"></i> Upload</button>
+        </form>
+        
+        <progress id="progressBar" value="0" max="100" style="display: none;"></progress>
+        
+        <p id="status" class="message"></p>
+        <p class="message">Supported file types: PDF, DOCX, XLSX, TXT, JPG, PNG</p>
+    </div>
+
+    <script>
+        const apiUrl = "https://51f4ejhagl.execute-api.us-east-1.amazonaws.com/dev";
+        
+        document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const statusText = document.getElementById('status');
+            const progressBar = document.getElementById('progressBar');
+            const uploadBtn = document.querySelector('#uploadForm button');
+
+            if (fileInput.files.length === 0) {
+                statusText.textContent = "Please select a file.";
+                return;
+            }
+
+            const file = fileInput.files[0];
+            statusText.textContent = "Requesting upload URL...";
+            uploadBtn.disabled = true;
+
+            try {
+                // Get presigned URL from API
+                const response = await fetch(`${apiUrl}/upload?file=${encodeURIComponent(file.name)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Use XMLHttpRequest for better progress tracking
+                const xhr = new XMLHttpRequest();
+                const formData = new FormData();
+                
+                // Add all fields from the presigned POST
+                Object.entries(data.fields).forEach(([key, value]) => {
+                    formData.append(key, value);
+                });
+                formData.append('file', file);
+
+                progressBar.style.display = "block";
+                
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = Math.round((event.loaded / event.total) * 100);
+                        progressBar.value = percentComplete;
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status === 204) {
+                        statusText.textContent = "Upload successful!";
+                    } else {
+                        statusText.textContent = "Upload failed.";
+                    }
+                    uploadBtn.disabled = false;
+                };
+
+                xhr.onerror = () => {
+                    statusText.textContent = "Error uploading file.";
+                    uploadBtn.disabled = false;
+                };
+
+                xhr.open('POST', data.url, true);
+                xhr.send(formData);
+
+            } catch (error) {
+                console.error("Error:", error);
+                statusText.textContent = "Error: " + error.message;
+                uploadBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
